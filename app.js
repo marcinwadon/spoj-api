@@ -13,6 +13,7 @@ app.get('/scrape', function (req, res) {
     
     var codes = [];
     var code;
+    var sended = false;
 
     request(url, function (error, response, html) {
         if (error) {
@@ -24,15 +25,18 @@ app.get('/scrape', function (req, res) {
             var data = $(this);
             code = data.text();
             if (code.length <= 0) return;
+
+            if (alg && code === alg) {
+                res.send([code]);
+                sended = true;
+                return;
+            }
+
             codes.push(code);
         });
 
 
-        if (alg) {
-            var filtered = codes.filter(function (c) {
-                return c === alg;
-            });
-            res.send(filtered);
+        if (sended) {
             return;
         }
 
