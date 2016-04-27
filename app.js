@@ -13,7 +13,6 @@ app.get('/scrape', function (req, res) {
     
     var codes = [];
     var code;
-    var sended = false;
 
     request(url, function (error, response, html) {
         if (error) {
@@ -27,8 +26,7 @@ app.get('/scrape', function (req, res) {
             if (code.length <= 0) return;
 
             if (alg && code === alg) {
-                res.send([code]);
-                sended = true;
+                res.send(code);
                 return;
             }
 
@@ -36,7 +34,11 @@ app.get('/scrape', function (req, res) {
         });
 
 
-        if (sended) {
+        if (alg) {
+            var filtered = codes.filter(function (c) {
+                return c === alg;
+            });
+            res.send(filtered);
             return;
         }
 
