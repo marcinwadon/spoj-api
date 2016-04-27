@@ -24,12 +24,6 @@ app.get('/scrape', function (req, res) {
             var data = $(this);
             code = data.text();
             if (code.length <= 0) return;
-
-            if (alg && code === alg) {
-                res.send(code);
-                return;
-            }
-
             codes.push(code);
         });
 
