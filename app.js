@@ -1,43 +1,50 @@
-var express = require('express');
-var request = require('request');
-var cheerio = require('cheerio');
-var fs = require('fs');
+const express = require('express');
+const request = require('request');
+const cheerio = require('cheerio');
+const fs = require('fs');
 
-var app = express();
+const app = express();
 
-app.get('/scrape', function (req, res) {
-    var user = req.query.user;
-    var url = 'http://www.spoj.com/users/' + user + '/';
+app.get('/scrape', (req, res) => {
+  const user = req.query.user;
+  const url = 'http://www.spoj.com/users/' + user + '/';
 
-    var alg = req.query.alg;
-    
-    var codes = [];
-    var code;
+  const alg = req.query.alg;
 
-    request(url, function (error, response, html) {
-        if (error) {
-            res.send('Error');
+  const codes = [];
+  let code;
+
+  request(url, (error, response, html) => {
+    if (error) {
+      res.send('Error');
+    }
+
+    let $ = cheerio.load(html);
+
+    $('#user-profile-tables table')
+      .first()
+      .find('td')
+      .filter(function () {
+        code = $(this).text();
+
+        if (code.length <= 0) {
+          return;
         }
 
-        var $ = cheerio.load(html);
-        $('#user-profile-tables table').first().find('td').filter(function () {
-            var data = $(this);
-            code = data.text();
-            if (code.length <= 0) return;
-            codes.push(code);
-        });
+        codes.push(code);
+      });
 
 
-        if (alg) {
-            var filtered = codes.filter(function (c) {
-                return c === alg;
-            });
-            res.send(filtered);
-            return;
-        }
+    if (alg) {
+      res.send(
+        codes.filter(code => code === alg)
+      );
 
-        res.send(codes);
-    });
+      return;
+    }
+
+    res.send(codes);
+  });
 
 });
 
