@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  install:
+    image: node:slim
+    volumes:
+      - ./:/usr/src/app
+    working_dir: /usr/src/app
+    entrypoint: ["npm", "install"]
+
+  api:
+    image: francolaiuppa/docker-nodemon-forever
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - "4545:80"
+    environment:
+      - PORT=80
+      - port=80
